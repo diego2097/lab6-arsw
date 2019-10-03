@@ -4,25 +4,21 @@ apimock=(function(){
    mockdata["author1"]=[{"author":"author1","points":[{"x":120,"y":15},{"x":5,"y":1},{"x":8,"y":4},{"x":10,"y":15}],"name":"Blueprits"}];
    return {
 	getBlueprintsByAuthor:function(name,callback){
-			return callback(
+			callback(
+				name,
 				mockdata[name]
 			);
 		},
 	
-	repaintPoints:function(nameAuthor,nameP,cordenadas,callback){
-		/*mockdata[nameAuthor].map(function(f){
-			if(f.name==nameP){
-				f.points.push(cordenadas)
-			}
-		});*/
-		console.log(mockdata[nameAuthor])
-		callback(
-			nameAuthor,
-			nameP
-		);
-
-		
-		
-	},
+		getBlueprintsByNameAndAuthor:function(author, name, callback){
+			mockdata[author].map(function(f){
+				if(f['name']==name){
+					callback(
+						f
+					);
+				}
+			})
+			
+		}
 
 }})();

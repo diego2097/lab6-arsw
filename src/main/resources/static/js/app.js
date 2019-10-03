@@ -6,16 +6,17 @@ var BlueprintsModule = (function(){
 	var autor="";
 	var point=[];
 	var currentBlueprint; 
-
-	var graficarPlano = function(nameAutor,namePlano){
+	var points=[];
+	var graficarPlano = function(funcion){
+		
 		blueprintOpen = true;
 		var c = document.getElementById("myCanvas");
 		var ctx = c.getContext("2d");
 		ctx.beginPath()
 		ctx.clearRect(0, 0, c.width, c.height);
-		console.log(c.width, c.height)
-		funcion=getBlueprintsByNameAndAuthor(api.getBlueprintsByAuthor(nameAutor,getBlueprints),namePlano);
-		funcion.map(function(f){
+		console.log(c.width, c.height);
+		currentBlueprint=funcion
+		funcion['points'].map(function(f){
 			console.log(f.x)
 			ctx.lineTo(f.x,f.y);
 			ctx.stroke();
@@ -26,14 +27,22 @@ var BlueprintsModule = (function(){
 			ctx.stroke();
 		})
 		ctx.closePath()
-		console.log(getBlueprintsByNameAndAuthor(api.getBlueprintsByAuthor(nameAutor,getBlueprints),namePlano))
-		$("#blueprintname").text(namePlano)
-		plano=namePlano;
-		autor=nameAutor;
+		$("#blueprintname").text(funcion['name'])
+		plano=funcion['name'];
+		autor=funcion['author'];
 	
 
 	};
-	
+	var graficarPlano2 = function(){
+		
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.beginPath()
+		console.log(c.width, c.height)
+		
+		ctx.closePath()
+		
+	};
 	var getBlueprints = function(funcion){
 		return funcion;
 	};
@@ -50,6 +59,7 @@ var BlueprintsModule = (function(){
 	};
 
 	var getByAuthor = function (funcion) {
+		
 		return funcion.map(function(f){
 			return {name:f.name,points:Object.keys(f.points).length};
 		});
@@ -57,10 +67,13 @@ var BlueprintsModule = (function(){
 
 	
 	var generarTable = function (name,funcion) {
+		console.log(funcion)
+		var fun=getByAuthor(funcion);
+		console.log("esta fue");
 		$("#cuerpo").html("");
 		var total=0
 		$("#totalPoints").text(total)
-		funcion.map(function(f) {
+		fun.map(function(f) {
 			$('#cuerpo')
 				.append(
 				  `<tr>
@@ -99,15 +112,16 @@ var BlueprintsModule = (function(){
 			var offsettop =  parseInt(getOffset(canvas).top, 10);
 			var x = event.pageX-offsetleft;
 			var y = event.pageY-offsettop;
-			var cordenadas={"x":x,"y":y}
+			var cordenadas={"x":x,"y":y};
+			api.getBlueprintsByNameAndAuthor(autor,plano,graficarPlano);
 			point.push(cordenadas)
-			api.repaintPoints(autor,plano,graficarPlano)
-			context.fillRect(event.pageX-offsetleft,event.pageY-offsettop,5,5);
+			
+			//api.repaintPoints(autor,plano,graficarPlano2)
+			
 		}	
 	};
 
 	var updateBlueprint=  function(){
-		console.log("updating")
 		point.map(function(f){
 			currentBlueprint.points.push(f)
 		});
@@ -119,8 +133,8 @@ var BlueprintsModule = (function(){
 	var init_canvas= function (nombre,nombrep) {
 		$("#cuerpoSaveUpdate").css("visibility", "visible");		
 		point=[];
-
-		graficarPlano(nombre,nombrep)
+		api.getBlueprintsByNameAndAuthor(nombre,nombrep,graficarPlano)
+		
 	};
 
 	var getOffset = function (obj) {
@@ -147,8 +161,7 @@ var BlueprintsModule = (function(){
 	
 	var run = function() {
 		var nameAutor = $('#autor').val();
-
-		generarTable(nameAutor,api.getBlueprintsByAuthor(nameAutor,getByAuthor));
+		api.getBlueprintsByAuthor(nameAutor,generarTable);
 	}
 
 	  return {
